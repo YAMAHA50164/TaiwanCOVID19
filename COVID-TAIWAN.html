@@ -2,6 +2,7 @@
 
 <html>
     <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/data.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -250,49 +251,49 @@
             2022/9/30,43505,41245,1.22
             2022/10/01,43085,41918,1.63
         </pre>
-            
+        <input type="file" id="fileInput">
+        <pre id="csv2"></pre>
     </body>
         
 </html>
 
 <script type="text/javascript">
 
-    /* set up XMLHttpRequest */
-    var url = "COVID-TAIWAN.xlsx";
-    var oReq = new XMLHttpRequest();
-    oReq.open("GET", url, true);
-    oReq.responseType = "arraybuffer";
-
-    oReq.onload = function(e) {
-        var arraybuffer = oReq.response;
-
-        /* convert data to binary string */
-        var data = new Uint8Array(arraybuffer);
-        var arr = new Array();
-        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        var bstr = arr.join("");
-
-        /* Call XLSX */
-        var workbook = XLSX.read(bstr, {
-            type: "binary"
+    window.onload = function() {
+        var fileInput = document.getElementById('fileInput');
+        var fileDisplayArea = document.getElementById('csv2');
+    
+        fileInput.addEventListener('change', function(e) {
+            var file = fileInput.files[0];  //'COVID-TAIWAN.csv';
+            var textType = /text.*/;
+    
+            if (file.type.match(textType)) {
+                var reader = new FileReader();
+    
+                reader.onload = function(e) {
+                    fileDisplayArea.innerText = reader.result;
+                }
+    
+                reader.readAsText(file);    
+            } else {
+                fileDisplayArea.innerText = "File not supported!"
+            }
         });
-
-        /* DO SOMETHING WITH workbook HERE */
-        var first_sheet_name = workbook.SheetNames[0];
-        /* Get worksheet */
-        var worksheet = workbook.Sheets[first_sheet_name];
-        console.log(XLSX.utils.sheet_to_json(worksheet, {
-            raw: true
-        }));
     }
 
-    oReq.send();
-        
-        
-        
-        
-        
-    Highcharts.chart('container', {
+    $.ajax({
+        type: "GET",
+        url: "https://yamaha50164.github.io/TaiwanCOVID19/COVID-TAIWAN.csv",
+        success: function (data) {
+            // $('#csv2').append(arrayToTable(Papa.parse(data).data));
+        }
+    });
+    
+    
+    
+    
+    
+    var charOption = {
     
         title: {
             text: 'COVID-19 In Taiwan 2022'
@@ -304,6 +305,8 @@
         
         data: {
             csv: document.getElementById('csv').innerHTML
+            // csv: 'COVID-TAIWAN.csv'
+            
         },
         
         yAxis: [{ // Primary yAxis
@@ -337,17 +340,48 @@
         
         series: [{
             name:'確診數',
-            type:'column'
+            type:'column',
+            data: []
         },
         {
             name:'七日上升比例',
-            type:'spline',        
+            type:'spline',
+            data: []
         },{
             name:'七日平均上升',
             type:'spline',
             yAxis: 1,
+            data: []
         }]
-    });
+    }
+
+
+    charOption.series[0].data.push(9);
+    charOption.series[0].data.push(99);
+    charOption.series[0].data.push(999);
+    
+    
+    Highcharts.chart('container', charOption);
+    
+    
+    
+    // $.each(series_model, function(num, series) {
+    //     var test = num;
+
+    //     $.each(data, function(num, data) {
+
+    //         var temp_data = {
+    //             // name: data['stage_id'],
+    //             name: data['name'],
+    //             y: Number(data[series["name"]]),
+    //             drilldown: data['stage_id'] + '#' + series["name"] + '#WIP',
+    //         };
+
+    //         series.data.push(temp_data);
+    //     });
+        
+    //     options.series.push(series);
+    // });
     
 </script>
 
