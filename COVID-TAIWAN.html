@@ -281,7 +281,7 @@
         });
     }
 
-    $.ajax({
+    var csvData = $.ajax({
         type: "GET",
         url: "https://yamaha50164.github.io/TaiwanCOVID19/COVID-TAIWAN.csv",
         success: function (data) {
