@@ -244,10 +244,11 @@
             2022/9/24,38371,40076,-0.45
             2022/9/25,38980,39992,-0.21
             2022/9/26,28513,40001,0.02
-            2022/9/27,,,
-            2022/9/28,,,
-            2022/9/29,,,
-            2022/9/30,,,
+            2022/9/27,45850,40159,0.39            
+            2022/9/28,48613,40403,0.61
+            2022/9/29,44880,40747,0.85
+            2022/9/30,43505,41245,1.22
+            2022/10/01,43085,41918,1.63
         </pre>
             
     </body>
@@ -255,6 +256,42 @@
 </html>
 
 <script type="text/javascript">
+
+    /* set up XMLHttpRequest */
+    var url = "COVID-TAIWAN.xlsx";
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", url, true);
+    oReq.responseType = "arraybuffer";
+
+    oReq.onload = function(e) {
+        var arraybuffer = oReq.response;
+
+        /* convert data to binary string */
+        var data = new Uint8Array(arraybuffer);
+        var arr = new Array();
+        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join("");
+
+        /* Call XLSX */
+        var workbook = XLSX.read(bstr, {
+            type: "binary"
+        });
+
+        /* DO SOMETHING WITH workbook HERE */
+        var first_sheet_name = workbook.SheetNames[0];
+        /* Get worksheet */
+        var worksheet = workbook.Sheets[first_sheet_name];
+        console.log(XLSX.utils.sheet_to_json(worksheet, {
+            raw: true
+        }));
+    }
+
+    oReq.send();
+        
+        
+        
+        
+        
     Highcharts.chart('container', {
     
         title: {
