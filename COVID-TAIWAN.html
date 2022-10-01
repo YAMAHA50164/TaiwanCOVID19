@@ -251,7 +251,7 @@
             2022/9/30,43505,41245,1.22
             2022/10/01,43085,41918,1.63
         </pre>
-        <input type="file" id="fileInput">
+        
         <pre id="csv2"></pre>
     </body>
         
@@ -259,33 +259,77 @@
 
 <script type="text/javascript">
 
-    window.onload = function() {
-        var fileInput = document.getElementById('fileInput');
-        var fileDisplayArea = document.getElementById('csv2');
-    
-        fileInput.addEventListener('change', function(e) {
-            var file = fileInput.files[0];  //'COVID-TAIWAN.csv';
-            var textType = /text.*/;
-    
-            if (file.type.match(textType)) {
-                var reader = new FileReader();
-    
-                reader.onload = function(e) {
-                    fileDisplayArea.innerText = reader.result;
-                }
-    
-                reader.readAsText(file);    
-            } else {
-                fileDisplayArea.innerText = "File not supported!"
-            }
-        });
-    }
-
     var csvData = $.ajax({
         type: "GET",
+        // url: "https://yamaha50164.github.io/TaiwanCOVID19/COVID-TAIWAN.csv",
         url: "https://yamaha50164.github.io/TaiwanCOVID19/COVID-TAIWAN.csv",
         success: function (data) {
-            // $('#csv2').append(arrayToTable(Papa.parse(data).data));
+             $('#csv2').append(data);
+             
+            var charOption = {
+        
+                title: {
+                    text: 'COVID-19 In Taiwan 2022'
+                },
+                
+                subtitle: {
+                    text: '手動更新CSV資料'
+                },
+                
+                data: {
+                    csv: document.getElementById('csv2').innerHTML
+                    // csv: 'COVID-TAIWAN.csv'
+                    
+                },
+                
+                yAxis: [{ // Primary yAxis
+                    title: {
+                        text: '人數',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    labels: {
+                        format: '{value}',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }            
+                }, { // Secondary yAxis
+                    title: {
+                        text: 'Ratio',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    labels: {
+                        format: '{value} %',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    opposite: true
+                }],
+                
+                series: [{
+                    name:'確診數',
+                    type:'column',
+                    data: []
+                },
+                {
+                    name:'七日上升比例',
+                    type:'spline',
+                    data: []
+                },{
+                    name:'七日平均上升',
+                    type:'spline',
+                    yAxis: 1,
+                    data: []
+                }]
+            }
+        
+
+             Highcharts.chart('container', charOption);
         }
     });
     
@@ -293,72 +337,10 @@
     
     
     
-    var charOption = {
-    
-        title: {
-            text: 'COVID-19 In Taiwan 2022'
-        },
-        
-        subtitle: {
-            text: '手動更新CSV資料'
-        },
-        
-        data: {
-            csv: document.getElementById('csv').innerHTML
-            // csv: 'COVID-TAIWAN.csv'
-            
-        },
-        
-        yAxis: [{ // Primary yAxis
-            title: {
-                text: '人數',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
-                }
-            },
-            labels: {
-                format: '{value}',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
-                }
-            }            
-        }, { // Secondary yAxis
-            title: {
-                text: 'Ratio',
-                style: {
-                    color: Highcharts.getOptions().colors[0]
-                }
-            },
-            labels: {
-                format: '{value} %',
-                style: {
-                    color: Highcharts.getOptions().colors[0]
-                }
-            },
-            opposite: true
-        }],
-        
-        series: [{
-            name:'確診數',
-            type:'column',
-            data: []
-        },
-        {
-            name:'七日上升比例',
-            type:'spline',
-            data: []
-        },{
-            name:'七日平均上升',
-            type:'spline',
-            yAxis: 1,
-            data: []
-        }]
-    }
-
-
-    charOption.series[0].data.push(9);
-    charOption.series[0].data.push(99);
-    charOption.series[0].data.push(999);
+   
+    // charOption.series[0].data.push(9);
+    // charOption.series[0].data.push(99);
+    // charOption.series[0].data.push(999);
     
     
     Highcharts.chart('container', charOption);
